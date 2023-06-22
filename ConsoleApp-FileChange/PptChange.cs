@@ -4,18 +4,22 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
-using DocumentFormat.OpenXml.Vml;
-using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace ConsoleApp_FileChange
 {
     internal class PptChange
     {
-        private const string presentationPath = @"C:\sampleDoc\EmployeeHandbook.pptx";
-        private const string stampText = "Sanitized By Global Markets - EY Knowledge";
-        internal void AddText()
+        private const string PresentationPath = @"C:\sampleDoc\ppt\EmployeeHandbook.pptx";
+        private const string StampText = "Sanitized by Global Markets – EY Knowledge";
+        private const long ShapeStampWidth = 4132413;
+        private const long ShapeStampHeight = 220060;
+        private const long ShapeStampXCoordinate = 127000;
+        private const long ShapeStampYCoordinate = 6438900;
+
+
+        internal static void AddText()
         {
-            using (PresentationDocument presentationDocument = PresentationDocument.Open(presentationPath, true))
+            using (PresentationDocument presentationDocument = PresentationDocument.Open(PresentationPath, true))
             {
                 PresentationPart presentationPart = presentationDocument.PresentationPart;
                 OpenXmlElementList slideIds = presentationPart.Presentation.SlideIdList.ChildElements;
@@ -24,9 +28,117 @@ namespace ConsoleApp_FileChange
                 // Get the slide part from the relationship IA.
                 SlidePart slide = (SlidePart)presentationPart.GetPartById(relId);
 
-                AddStamp(slide);
+                AddStampToFixPosition(slide);
             }
         }
+
+        private static void AddStampToFixPosition(SlidePart slide)
+        {
+            long slideHeight = FindSlideSize(slide).Cy.Value;
+
+            CommonSlideData commonSlideData = slide.Slide.CommonSlideData;
+            var shapeTree = commonSlideData.Descendants<P.ShapeTree>().FirstOrDefault();
+
+            var shape = new DocumentFormat.OpenXml.Presentation.Shape();
+            BindSlideProperties(slideHeight, shapeTree, shape);
+            
+            P.TextBody textBody;
+            Paragraph paragraph;
+            BindParagraphAndTextBodyProperties(out textBody, out paragraph);
+
+            A.Run run = new A.Run();
+            RunProperties runProperties = BindRunProperties();
+
+            A.Text text = new A.Text(StampText);
+
+            run.Append(runProperties);
+            run.Append(text);
+            paragraph.Append(run);
+            textBody.Append(paragraph);
+            shape.Append(textBody);
+            shapeTree.Append(shape);
+        }
+
+        private static SlideSize FindSlideSize(SlidePart slide)
+        {
+            // Get the slide size information
+            PresentationPart presPart = slide.GetParentParts().FirstOrDefault(z => z is PresentationPart) as PresentationPart;
+
+            SlideSize slideSize = null;
+            if (presPart != null)
+            {
+                slideSize = presPart.Presentation.GetFirstChild<SlideSize>();
+            }
+            return slideSize;
+        }
+
+        private static void BindSlideProperties(long slideHeight, ShapeTree? shapeTree, P.Shape shape)
+        {
+            shape.NonVisualShapeProperties = new DocumentFormat.OpenXml.Presentation.NonVisualShapeProperties();
+            shape.NonVisualShapeProperties.Append(new DocumentFormat.OpenXml.Presentation.NonVisualDrawingProperties
+            {
+                Name = "Shape Stamp",
+                Id = (UInt32)shapeTree.ChildElements.Count - 1
+            });
+            shape.NonVisualShapeProperties.Append(new DocumentFormat.OpenXml.Presentation.NonVisualShapeDrawingProperties());
+            shape.NonVisualShapeProperties.Append(new DocumentFormat.OpenXml.Presentation.ApplicationNonVisualDrawingProperties());
+
+            shape.ShapeProperties = new DocumentFormat.OpenXml.Presentation.ShapeProperties();
+            shape.ShapeProperties.Transform2D = new DocumentFormat.OpenXml.Drawing.Transform2D();
+            shape.ShapeProperties.Transform2D.Append(new DocumentFormat.OpenXml.Drawing.Offset
+            {
+                X = ShapeStampXCoordinate,
+                Y = slideHeight - ShapeStampHeight - 100000,
+            });
+            shape.ShapeProperties.Transform2D.Append(new DocumentFormat.OpenXml.Drawing.Extents
+            {
+                Cx = ShapeStampWidth,
+                Cy = ShapeStampHeight,
+            });
+            shape.ShapeProperties.Append(new PresetGeometry
+            {
+                Preset = ShapeTypeValues.Rectangle
+            });
+        }
+
+        private static void BindParagraphAndTextBodyProperties(out P.TextBody textBody, out Paragraph paragraph)
+        {
+            textBody = new P.TextBody();
+            A.BodyProperties bodyProps = new A.BodyProperties();
+            bodyProps.Wrap = A.TextWrappingValues.None;
+            bodyProps.Vertical = A.TextVerticalValues.Horizontal;
+            textBody.Append(bodyProps);
+
+            paragraph = new A.Paragraph();
+            A.ParagraphProperties paragraphProperties1 = new A.ParagraphProperties()
+            {
+                Alignment = TextAlignmentTypeValues.Left
+            };
+            paragraph.Append(paragraphProperties1);
+        }        
+
+        private static RunProperties BindRunProperties()
+        {
+            var runProperties = new A.RunProperties()
+            {
+                FontSize = 1400,
+                Bold = true,
+                Language = "en-US",
+                Dirty = false,
+                SmartTagClean = false
+            };
+            runProperties.Append(new A.SolidFill(new A.RgbColorModelHex() { Val = "FFFF00" })); // Set font color to white
+            runProperties.Append(new A.LatinFont()
+            {
+                Typeface = "EYInterstate",
+                CharacterSet = 0,
+                PitchFamily = 2,
+                Panose = "02000503020000020004"
+            });
+            return runProperties;
+        }
+
+        
 
         private static void AddStamp(SlidePart slide)
         {
@@ -36,7 +148,7 @@ namespace ConsoleApp_FileChange
             if (textBody == null)
             {
                 textBody = new P.TextBody();
-                commonSlideData.AppendChild(textBody);
+                commonSlideData.Append(textBody);
             }
 
             // Find the first paragraph element or create a new one if it doesn't exist
@@ -44,28 +156,28 @@ namespace ConsoleApp_FileChange
             if (paragraph == null)
             {
                 paragraph = new A.Paragraph();
-                textBody.AppendChild(paragraph);
+                textBody.Append(paragraph);
             }
 
             // Create a new run and text elements for the paragraph
             var run = new A.Run();
-            var text = new A.Text(stampText);
-            run.AppendChild(text);
+            var text = new A.Text(StampText);
+            run.Append(text);
 
 
             // Get the font color from an existing text run or paragraph
-            var fontColor = GetFontColorFromSlide(slide);
+            //var fontColor = GetFontColorFromSlide(slide);
             var runProperties = new A.RunProperties()
             {
                 FontSize = 1400,
                 Bold = true
             };
-            runProperties.Append(new A.SolidFill(new A.RgbColorModelHex { Val = fontColor.Val.Value }));
+            //runProperties.Append(new A.SolidFill(new A.RgbColorModelHex { Val = fontColor.Val.Value }));
 
             run.Append(runProperties);
 
             A.Paragraph paragraph1 = new A.Paragraph();
-            paragraph1.AppendChild(run);
+            paragraph1.Append(run);
 
             paragraph1.ParagraphProperties = new A.ParagraphProperties()
             {
@@ -77,69 +189,127 @@ namespace ConsoleApp_FileChange
             paragraph.InsertAfterSelf(paragraph1);
         }
 
-        static Color GetFontColorFromSlide(SlidePart slidePart)
+        public static void AddShape()
         {
-            // Get the first text run or paragraph from the slide
-            var firstTextRun = slidePart.Slide.Descendants<A.Run>().FirstOrDefault();
-            var firstParagraph = slidePart.Slide.Descendants<A.Paragraph>().FirstOrDefault();
-
-            // Retrieve the font color from the first text run or paragraph
-            if (firstTextRun != null)
+            using (var presentation = PresentationDocument.Open(PresentationPath, true))
             {
-                var solidFill = firstTextRun.Descendants<A.SolidFill>().FirstOrDefault();
-                if (solidFill != null)
-                {
-                    var rgbColor = solidFill.Descendants<A.RgbColorModelHex>().FirstOrDefault();
-                    if (rgbColor != null)
-                    {
-                        return new Color { Val = rgbColor.Val };
-                    }
-                }
-            }
-            else if (firstParagraph != null)
-            {
-                var solidFill = firstParagraph.Descendants<A.SolidFill>().FirstOrDefault();
-                if (solidFill != null)
-                {
-                    var rgbColor = solidFill.Descendants<A.RgbColorModelHex>().FirstOrDefault();
-                    if (rgbColor != null)
-                    {
-                        return new Color
-                        {
-                            Val = rgbColor.Val
-                        };
-                    }
-                }
-            }
+                var tree = presentation
+                    .PresentationPart
+                    .SlideParts
+                    .ElementAt(0)
+                    .Slide
+                    .Descendants<DocumentFormat.OpenXml.Presentation.ShapeTree>()
+                    .First();
 
-            // Default to black if no font color is found
-            return new Color { Val = "000000" };
+                var shape = new DocumentFormat.OpenXml.Presentation.Shape();
+
+                shape.NonVisualShapeProperties = new DocumentFormat.OpenXml.Presentation.NonVisualShapeProperties();
+                shape.NonVisualShapeProperties.Append(new DocumentFormat.OpenXml.Presentation.NonVisualDrawingProperties
+                {
+                    Name = "My Shape",
+                    Id = (UInt32)tree.ChildElements.Count - 1
+                });
+                shape.NonVisualShapeProperties.Append(new DocumentFormat.OpenXml.Presentation.NonVisualShapeDrawingProperties());
+                shape.NonVisualShapeProperties.Append(new DocumentFormat.OpenXml.Presentation.ApplicationNonVisualDrawingProperties());
+
+                shape.ShapeProperties = new DocumentFormat.OpenXml.Presentation.ShapeProperties();
+                shape.ShapeProperties.Transform2D = new DocumentFormat.OpenXml.Drawing.Transform2D();
+                shape.ShapeProperties.Transform2D.Append(new DocumentFormat.OpenXml.Drawing.Offset
+                {
+                    X = ShapeStampXCoordinate,
+                    Y = ShapeStampYCoordinate,
+                });
+                shape.ShapeProperties.Transform2D.Append(new DocumentFormat.OpenXml.Drawing.Extents
+                {
+                    Cx = ShapeStampWidth,
+                    Cy = ShapeStampHeight,
+                });
+                shape.ShapeProperties.Append(new PresetGeometry
+                {
+                    Preset = ShapeTypeValues.Rectangle
+                });
+                shape.ShapeProperties.Append(new SolidFill
+                {
+                    SchemeColor = new SchemeColor
+                    {
+                        Val = SchemeColorValues.Accent2
+                    }
+                });
+                shape.ShapeProperties.Append(new A.Outline(new NoFill()));
+
+                //P.TextBody textBody = new P.TextBody();
+
+                //A.Paragraph paragraph1 = new A.Paragraph();
+                //A.ParagraphProperties paragraphProperties1 = new A.ParagraphProperties()
+                //{
+                //    Alignment = TextAlignmentTypeValues.Left
+                //};
+                //paragraph1.Append(paragraphProperties1);
+
+                //textBody.Append(paragraph1);
+
+                //A.Run run = new A.Run();
+                //var text = new A.Text(StampText);
+                //run.Append(text);
+                //var runProperties = new A.RunProperties()
+                //{
+                //    FontSize = 1400,
+                //    Bold = true,
+                //};
+
+                //run.Append(runProperties);
+
+                //paragraph1.Append(run);
+
+
+                //shape.Append(textBody);
+
+                tree.Append(shape);
+            }
         }
 
 
-        private static void FindSlideDimension(CommonSlideData commonSlideData, SlidePart slide)
-        {
-            // Get the slide size information
-            PresentationPart presPart = slide.GetParentParts().FirstOrDefault(z => z is PresentationPart) as PresentationPart;
+        //static Color GetFontColorFromSlide(SlidePart slidePart)
+        //{
+        //    // Get the first text run or paragraph from the slide
+        //    var firstTextRun = slidePart.Slide.Descendants<A.Run>().FirstOrDefault();
+        //    var firstParagraph = slidePart.Slide.Descendants<A.Paragraph>().FirstOrDefault();
 
-            SlideSize slideSize = null;
-            if (presPart != null)
-            {
-                slideSize = presPart.Presentation.GetFirstChild<SlideSize>();
-            }
+        //    // Retrieve the font color from the first text run or paragraph
+        //    if (firstTextRun != null)
+        //    {
+        //        var solidFill = firstTextRun.Descendants<A.SolidFill>().FirstOrDefault();
+        //        if (solidFill != null)
+        //        {
+        //            var rgbColor = solidFill.Descendants<A.RgbColorModelHex>().FirstOrDefault();
+        //            if (rgbColor != null)
+        //            {
+        //                return new Color { Val = rgbColor.Val };
+        //            }
+        //        }
+        //    }
+        //    else if (firstParagraph != null)
+        //    {
+        //        var solidFill = firstParagraph.Descendants<A.SolidFill>().FirstOrDefault();
+        //        if (solidFill != null)
+        //        {
+        //            var rgbColor = solidFill.Descendants<A.RgbColorModelHex>().FirstOrDefault();
+        //            if (rgbColor != null)
+        //            {
+        //                return new Color
+        //                {
+        //                    Val = rgbColor.Val
+        //                };
+        //            }
+        //        }
+        //    }
 
-            // Get the slide width and height
-            long slideWidth = slideSize.Cx.Value;
-            long slideHeight = slideSize.Cy.Value;
+        //    // Default to black if no font color is found
+        //    return new Color { Val = "000000" };
+        //}
 
-            Console.WriteLine($"slide width: {slideWidth} and height: {slideHeight}");
 
-            var node = commonSlideData.Descendants<A.Paragraph>().Where(x => x.InnerText.StartsWith("Over recent years"));
-
-            //var maxSPct = commonSlideData.Descendants<A.SpacingPercent>().Max();
-
-            var testtext = commonSlideData.Descendants<A.Paragraph>().Where(x => x.InnerText.StartsWith("Over recent years")).FirstOrDefault().InnerText;
-        }
+        
 
         private void CommentedCode()
         {
@@ -202,7 +372,7 @@ namespace ConsoleApp_FileChange
             //    commonSlideData.ShapeTree = new P.ShapeTree();
 
             //// Add the new text box shape to the shape tree
-            //commonSlideData.ShapeTree.AppendChild(textBoxShape);
+            //commonSlideData.ShapeTree.Append(textBoxShape);
 
             //// Create a new text box shape for the footer
             //// Create a new paragraph for the footer

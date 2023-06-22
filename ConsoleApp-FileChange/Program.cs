@@ -10,7 +10,25 @@ class Program
     public const string StampOnSanitizedFile = "Sanitized By Global Markets - EY Knowledge";
     static void Main()
     {
-        new PptChange().AddText();
+        //Generic1<Request> generic1 = new Generic1<Request>();
+        //generic1.Method1<int>(new Request("tenant1"), 1);
+        //Generic<string,int> generic = new Generic<string,int>();
+        //generic.WriteData("string", 100);
+        //ChildClass  childClass = new ChildClass();
+        //childClass.DisplayMessage("Titan");
+        //string name = "xxx";
+        //clsB b =new clsB("ttt") { Name="vvv"};
+        //b.SetValue(1000,ref name);
+        //b.DisplayValue();
+
+        //recordTest objRec=new recordTest("Abhi");
+        //Console.WriteLine(b.Name);
+
+        //PdfChange.AddStamp();
+        //WordDocChange.AddStamp();
+        //PptChange.AddText();
+
+        //new PptChange().AddText();
 
         ////WordDocumentEditor editor = new WordDocumentEditor();
         ////editor.AddText(filePath);
@@ -294,4 +312,51 @@ class Program
     //    }
     //} 
     #endregion
+
+    public record recordTest(string name)
+    {
+
+    }
+
+    public class clsB
+    {
+        private int _number;
+        private string _name;
+        public clsB(string name)
+        {
+            Name = name;
+        }
+
+
+
+        public void SetValue(int number, ref string name)
+        {
+            _number = number+ 1;
+            _name = name = name+" Change";
+        }
+
+        public void DisplayValue()
+        {
+            Console.WriteLine($"{_number} {_name}");
+        }
+
+
+        public string Name { get; set; }        
+    }
+    internal class BaseClass
+    {
+        internal virtual void DisplayMessage(string msg)
+        {
+            Console.WriteLine($"Base class- {msg}");
+        }
+    }
+
+    internal class ChildClass:BaseClass
+    {
+        internal override void DisplayMessage(string msg)
+        {
+            Console.WriteLine($"Child class- {msg}");
+        }
+    }
+
 }
