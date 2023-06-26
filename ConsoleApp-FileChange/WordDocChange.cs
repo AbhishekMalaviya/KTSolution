@@ -6,9 +6,9 @@ namespace ConsoleApp_FileChange
 {
     internal class WordDocChange
     {
-        private const string FilePath = @"C:\sampleDoc\docx\TPRP_Notification.docx";
-        private const string FileOutputPath = @"C:\sampleDoc\docx\TPRP_Notification-Output.docx";
-        private const string StampText = "Sanitized By Global Markets - EY Knowledge";
+        private const string FilePath = @"C:\sampleDoc\docx\Sample.docx";
+        private const string FileOutputPath = @"C:\sampleDoc\docx\Sample-Output.docx";
+        
         private const double ShapeStampWidth = 4 * 72;
         private const double ShapeStampHeight = 2 * 72;
         private const double ShapeStampXCoordinate = 50;
@@ -37,7 +37,7 @@ namespace ConsoleApp_FileChange
             textBox.AppendChild(para);
 
             // Add the text to the paragraph
-            Run run = new Run(doc, StampText);
+            Run run = new Run(doc, Constants.StampText);
             run.Font.Size = 12; // Set the font size
             run.Font.Bold = true; // Set the font style to bold            
             para.AppendChild(run);

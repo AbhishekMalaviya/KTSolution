@@ -9,8 +9,7 @@ namespace ConsoleApp_FileChange
 {
     internal class PptChange
     {
-        private const string PresentationPath = @"C:\sampleDoc\ppt\EmployeeHandbook.pptx";
-        private const string StampText = "Sanitized by Global Markets – EY Knowledge";
+        private const string PresentationPath = @"C:\sampleDoc\ppt\Test.pptx";
         private const long ShapeStampWidth = 4132413;
         private const long ShapeStampHeight = 220060;
         private const long ShapeStampXCoordinate = 127000;
@@ -49,7 +48,7 @@ namespace ConsoleApp_FileChange
             A.Run run = new A.Run();
             RunProperties runProperties = BindRunProperties();
 
-            A.Text text = new A.Text(StampText);
+            A.Text text = new A.Text(Constants.StampText);
 
             run.Append(runProperties);
             run.Append(text);
@@ -130,7 +129,7 @@ namespace ConsoleApp_FileChange
             runProperties.Append(new A.SolidFill(new A.RgbColorModelHex() { Val = "FFFF00" })); // Set font color to white
             runProperties.Append(new A.LatinFont()
             {
-                Typeface = "EYInterstate",
+                Typeface = "Arial",
                 CharacterSet = 0,
                 PitchFamily = 2,
                 Panose = "02000503020000020004"
@@ -161,7 +160,7 @@ namespace ConsoleApp_FileChange
 
             // Create a new run and text elements for the paragraph
             var run = new A.Run();
-            var text = new A.Text(StampText);
+            var text = new A.Text(Constants.StampText);
             run.Append(text);
 
 

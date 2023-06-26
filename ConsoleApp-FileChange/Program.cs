@@ -6,8 +6,8 @@ using DocumentFormat.OpenXml.Wordprocessing;
 
 class Program
 {
-    static string filePath = @"C:\\sampleDoc\\TPRP_Notification.docx";
-    public const string StampOnSanitizedFile = "Sanitized By Global Markets - EY Knowledge";
+    static string filePath = @"C:\\sampleDoc\\Sample.docx";
+    
     static void Main()
     {
         //Generic1<Request> generic1 = new Generic1<Request>();

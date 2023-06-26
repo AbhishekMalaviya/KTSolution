@@ -7,7 +7,7 @@ namespace ConsoleApp_FileChange
     {
         private const string FilePath = @"C:\sampleDoc\pdf\The-Smarter-Store-Window.pdf";
         private const string FileOutputPath = @"C:\sampleDoc\pdf\The-Smarter-Store-Window-Output.pdf";
-        private const string StampText = "Sanitized By Global Markets - EY Knowledge";
+        
         
         internal static void AddStamp()
         {  
@@ -18,7 +18,7 @@ namespace ConsoleApp_FileChange
             Page pdfPage = pdfDocument.Pages[1];
 
             // Create text fragment
-            TextFragment textFragment = new TextFragment(StampText);
+            TextFragment textFragment = new TextFragment(Constants.StampText);
             textFragment.Position = new Position(10, 10);
 
             // Set text properties
