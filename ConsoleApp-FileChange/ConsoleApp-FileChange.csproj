@@ -14,4 +14,12 @@
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.18.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Users\YS193PX\source\repos\KTSolution\ConsoleApp-FileChange\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="C:\Users\YS193PX\source\repos\KTSolution\ConsoleApp-FileChange\.editorconfig" />
+  </ItemGroup>
+
 </Project>

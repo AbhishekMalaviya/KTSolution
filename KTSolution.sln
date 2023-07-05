@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GrpcGreeter", "GrpcGreeter\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GrpcGreeterClient", "GrpcGreeterClient\GrpcGreeterClient.csproj", "{3CCF7BC5-BCD1-4225-AA7A-0F2B347EE7B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp-FileChange", "ConsoleApp-FileChange\ConsoleApp-FileChange.csproj", "{6611439F-F679-458A-9B3C-40677CD317EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp-FileChange", "ConsoleApp-FileChange\ConsoleApp-FileChange.csproj", "{6611439F-F679-458A-9B3C-40677CD317EF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F3B0DBD0-3B13-4AD2-9003-6B526890BF2A}"
+	ProjectSection(SolutionItems) = preProject
+		ConsoleApp-FileChange\.editorconfig = ConsoleApp-FileChange\.editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -10,8 +10,8 @@ namespace ConsoleApp_FileChange
     internal class PptChange
     {
         private const string PresentationPath = @"C:\sampleDoc\ppt\Test.pptx";
-        private const long ShapeStampWidth = 4132413;
-        private const long ShapeStampHeight = 220060;
+        private const long ShapeStampWidth = 3830000;
+        private const long ShapeStampHeight = 250000;
         private const long ShapeStampXCoordinate = 127000;
         private const long ShapeStampYCoordinate = 6438900;
 
@@ -40,7 +40,7 @@ namespace ConsoleApp_FileChange
 
             var shape = new DocumentFormat.OpenXml.Presentation.Shape();
             BindSlideProperties(slideHeight, shapeTree, shape);
-            
+
             P.TextBody textBody;
             Paragraph paragraph;
             BindParagraphAndTextBodyProperties(out textBody, out paragraph);
@@ -87,7 +87,7 @@ namespace ConsoleApp_FileChange
             shape.ShapeProperties.Transform2D.Append(new DocumentFormat.OpenXml.Drawing.Offset
             {
                 X = ShapeStampXCoordinate,
-                Y = slideHeight - ShapeStampHeight - 100000,
+                Y = slideHeight - ShapeStampHeight,
             });
             shape.ShapeProperties.Transform2D.Append(new DocumentFormat.OpenXml.Drawing.Extents
             {
@@ -98,6 +98,9 @@ namespace ConsoleApp_FileChange
             {
                 Preset = ShapeTypeValues.Rectangle
             });
+
+            shape.ShapeProperties.Append(new SolidFill
+            (new A.RgbColorModelHex() { Val = Constants.WhiteColorCode }));
         }
 
         private static void BindParagraphAndTextBodyProperties(out P.TextBody textBody, out Paragraph paragraph)
@@ -111,10 +114,12 @@ namespace ConsoleApp_FileChange
             paragraph = new A.Paragraph();
             A.ParagraphProperties paragraphProperties1 = new A.ParagraphProperties()
             {
-                Alignment = TextAlignmentTypeValues.Left
+                Alignment = TextAlignmentTypeValues.Left,
+                LeftMargin = 0,
+                RightMargin = 0
             };
             paragraph.Append(paragraphProperties1);
-        }        
+        }
 
         private static RunProperties BindRunProperties()
         {
@@ -126,18 +131,18 @@ namespace ConsoleApp_FileChange
                 Dirty = false,
                 SmartTagClean = false
             };
-            runProperties.Append(new A.SolidFill(new A.RgbColorModelHex() { Val = "FFFF00" })); // Set font color to white
+            //runProperties.Append(new A.SolidFill(new A.RgbColorModelHex() { Val = "FFFF00" })); 
             runProperties.Append(new A.LatinFont()
             {
-                Typeface = "Arial",
-                CharacterSet = 0,
-                PitchFamily = 2,
-                Panose = "02000503020000020004"
+                Typeface = Constants.FontName,
+                //CharacterSet = 0,
+                //PitchFamily = 2,
+                //Panose = "02000503020000020004"
             });
             return runProperties;
         }
 
-        
+
 
         private static void AddStamp(SlidePart slide)
         {
@@ -308,7 +313,7 @@ namespace ConsoleApp_FileChange
         //}
 
 
-        
+
 
         private void CommentedCode()
         {

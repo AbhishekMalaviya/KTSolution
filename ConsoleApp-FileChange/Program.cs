@@ -1,15 +1,12 @@
 ﻿using ConsoleApp_FileChange;
-using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Drawing;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
 
 class Program
 {
     static string filePath = @"C:\\sampleDoc\\Sample.docx";
-    
+
     static void Main()
     {
+        #region oop
         //Generic1<Request> generic1 = new Generic1<Request>();
         //generic1.Method1<int>(new Request("tenant1"), 1);
         //Generic<string,int> generic = new Generic<string,int>();
@@ -22,19 +19,23 @@ class Program
         //b.DisplayValue();
 
         //recordTest objRec=new recordTest("Abhi");
-        //Console.WriteLine(b.Name);
+        //Console.WriteLine(b.Name); 
+        #endregion
 
         //PdfChange.AddStamp();
-        //WordDocChange.AddStamp();
-        //PptChange.AddText();
 
+        //WordDocChange.AddStamp();
+        PptChange.AddText();
+
+        #region commented code
         //new PptChange().AddText();
 
         ////WordDocumentEditor editor = new WordDocumentEditor();
         ////editor.AddText(filePath);
 
         //WordProcessingTextBox.AddTextBoxToDocument(filePath);
-        ////WordProcessingTextBox.PlaceTextAtCoordinate(para, "Text at 120.5,120.5", 120.1, 120.1);
+        ////WordProcessingTextBox.PlaceTextAtCoordinate(para, "Text at 120.5,120.5", 120.1, 120.1); 
+        #endregion
     }
     #region Old code
     //static void ChangeHeader(string documentPath)
@@ -312,51 +313,5 @@ class Program
     //    }
     //} 
     #endregion
-
-    public record recordTest(string name)
-    {
-
-    }
-
-    public class clsB
-    {
-        private int _number;
-        private string _name;
-        public clsB(string name)
-        {
-            Name = name;
-        }
-
-
-
-        public void SetValue(int number, ref string name)
-        {
-            _number = number+ 1;
-            _name = name = name+" Change";
-        }
-
-        public void DisplayValue()
-        {
-            Console.WriteLine($"{_number} {_name}");
-        }
-
-
-        public string Name { get; set; }        
-    }
-    internal class BaseClass
-    {
-        internal virtual void DisplayMessage(string msg)
-        {
-            Console.WriteLine($"Base class- {msg}");
-        }
-    }
-
-    internal class ChildClass:BaseClass
-    {
-        internal override void DisplayMessage(string msg)
-        {
-            Console.WriteLine($"Child class- {msg}");
-        }
-    }
 
 }
