@@ -22,10 +22,17 @@ class Program
         //Console.WriteLine(b.Name); 
         #endregion
 
+        //PptmToPptx.Save(Constants.PptmFilePath, Constants.PptxFilePath);
+        //PptmToPptx.ValidatePptxFile(Constants.PptxFilePath);
+
+        //PptmToPptx.ConvertPptmToPptx(Constants.PptmFilePath, Constants.PptxFilePath);
+
+        PptmToPptx.ConvertPptmToPptx(Constants.PptmFilePath);
+
         //PdfChange.AddStamp();
 
         //WordDocChange.AddStamp();
-        PptChange.AddText();
+        //PptChange.AddText();
 
         #region commented code
         //new PptChange().AddText();
@@ -37,6 +44,11 @@ class Program
         ////WordProcessingTextBox.PlaceTextAtCoordinate(para, "Text at 120.5,120.5", 120.1, 120.1); 
         #endregion
     }
+
+    
+
+
+
     #region Old code
     //static void ChangeHeader(string documentPath)
     //{
